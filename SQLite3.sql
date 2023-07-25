@@ -42,6 +42,7 @@ WHERE actors.first_name = 'Kevin' AND actors.last_name = 'Bacon' AND movies_genr
 INNER JOIN roles ON tabla_kevin.id_pelicula = roles.movie_id
 INNER JOIN actors ON roles.actor_id = actors.id
 WHERE NOT actors.first_name = 'Kevin' AND actors.last_name = 'Bacon'
+
 /*¿Cúales son los actores que actuaron en un film antes de 1900 y también en un film después del 2000?
 
 NOTA: no estamos pidiendo todos los actores pre-1900 y post-2000, sino aquellos que hayan trabajado en ambas eras.*/
@@ -70,3 +71,31 @@ WHERE id IN(
 )
 )
 ORDER BY id;
+
+/*Buscá actores que hayan tenido cinco, o más, roles distintos en la misma película luego del año 1990.
+
+Escribí un query que retorne el nombre del actor, el nombre de la película y el número de roles distintos que hicieron en esa película (que va a ser ≥5).*/
+
+/*SELECT 
+    a.first_name AS nombre_actor,
+    m.name AS nombre_pelicula,
+    COUNT(DISTINCT r.role) AS num_roles
+FROM 
+    actors a
+JOIN 
+    roles r ON a.id = r.actor_id
+JOIN 
+    movies m ON m.id = r.movie_id
+GROUP BY 
+    a.first_name, m.name
+HAVING 
+    COUNT(DISTINCT r.role) >= 5;*/
+
+SELECT a.first_name||' '|| a.last_name  AS full_name, m.name as "Movie", m.year as  "Year" COUNT(r.role) as roles_counter
+FROM actors a
+JOIN roles r ON a.id = r.actor_id
+JOIN movies m ON r.movie_id = m.id 
+WHERE m.year > 1990 
+GROUP BY a.id, m.id
+HAVING roles_counter >= 5
+ORDER BY roles_counter DESC LIMIT 10;
